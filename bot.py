@@ -923,7 +923,7 @@ markup = InlineKeyboardMarkup(list())
 CURRENT_USER = None
 CHAT_USERS = dict()
 
-app = ApplicationBuilder().token("7954354518:AAGZ-B2IaCeKxOyTbH7ZVCG4WCgfy-1_bK8").build()
+app = ApplicationBuilder().token(BOT_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("add_user", add_user))
 app.add_handler(CommandHandler("change_user", change_user))
