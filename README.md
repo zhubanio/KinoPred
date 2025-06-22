@@ -93,6 +93,7 @@ pip install -r requirements.txt
 
 # Файл .env
 BOT_TOKEN="ВАШ_ТОКЕН_ЗДЕСЬ"
+API_KEYS="ВАШИ КЛЮЧИ ЧЕРЕЗ ПРОБЕЛ ЗДЕСЬ"
 
 Запустите бота:
 
