@@ -941,4 +941,4 @@ app.add_handler(CallbackQueryHandler(start_data_processing, pattern="start_data_
 
 app.add_handler(MessageHandler(filters.Document.ALL, handle_document))
 
-app.run_polling()
+app.run_webhook()
