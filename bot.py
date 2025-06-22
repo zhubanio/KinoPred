@@ -17,9 +17,9 @@ import json
 from typing import Optional
 from telegram import Message
 
-from pipeline.train_and_ensemble import train_and_ensemble
+from train_and_ensemble import train_and_ensemble
 
-os.environ["JOBLIB_TEMP_FOLDER"] = r"C:\tmp\cachedir"
+# os.environ["JOBLIB_TEMP_FOLDER"] = r"C:\tmp\cachedir"
 
 
 def escape_markdown_v2(text: str) -> str:
@@ -362,18 +362,6 @@ async def parse_page_tg(url, query, headers_index: int):
     except Exception as e:
         await query.message.reply_text(f"✘ Ошибка при обработке {url}: {e}")
         return "mistake"
-
-
-def load_parsed_pages(user_id):
-    if os.path.exists(f'parsed_pages/{user_id}.txt'):
-        with open(f'parsed_pages/{user_id}.txt') as f:
-            return set(f.read().splitlines())
-    return set()
-
-
-def save_parsed_page(page_id, user_id):
-    with open(f'parsed_pages/{user_id}.txt', 'a') as f:
-        f.write(f"{page_id}\n")
 
 
 def load_existing_movies(user_id):
@@ -756,189 +744,219 @@ async def print_prediction(update, context):
         await update.message.reply_text(final_message)
     await go_on(update, context)
 
-load_dotenv()
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-API_KEYS = os.environ.get("API_KEYS")
-API_KEYS_LIST = API_KEYS.split(" ")
-API_S = "\n".join(API_KEYS_LIST)
-with open("auxiliary files/api_keys.txt", "w", encoding="utf-8") as fi:
-    fi.write(API_S)
-headers_list = [{
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
-    "Referer": "https://www.kinopoisk.ru/",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
-},
-                   {
-                       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                                     "Chrome/134.0.0.0"
-                                     "YaBrowser/25.4.0.0 Safari/537.36",
-                       "Accept": "*/*",
-                       "Accept-Language": "ru,en;q=0.9",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       # "Cookie": ,
-                       "Cache-Control": "no-cache",
-                       "Connection": "keep-alive",
-                       "Sec-Fetch-Dest": "empty",
-                       "Sec-Fetch-Mode": "no-cors",
-                       "Sec-Fetch-Site": "cross-site",
-                       "sec-fetch-storage-access": "active"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                                     "Chrome/134.0.0.0"
-                                     "YaBrowser/25.4.0.0 Safari/537.36",
-                       "Accept": "*/*",
-                       "Accept-Language": "ru,en;q=0.9",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Cookie": "yandexuid=8969119991720263528; yashr=926658521720263535; yuidss=8969119991720263528; ymex=2035623597.yrts.1720263597; yandex_login=egor.matiuha; my=YwA=; gdpr=0; _ym_uid=1688552967950758693; amcuid=4355776901720429538; bh=EjsiTm90L0EpQnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjEyNiIsICJZYUJyb3dzZXIiO3Y9IjI0IhoFIng4NiIiDCIyNC42LjIuNzcwIioCPzA6CSJXaW5kb3dzIkIIIjE1LjAuMCJKBCI2NCJSVCJDaHJvbWl1bSI7dj0iMTI0LjAuNjM2Ny4yNDMiLCJZYUJyb3dzZXIiO3Y9IjI0LjYuMi43NzAiLCJOb3QtQS5CcmFuZCI7dj0iOTkuMC4wLjAiIg==; _ym_d=1742546859; yabs-vdrf=A0; is_gdpr=0; is_gdpr_b=CK6UEBDhwwIoAg==; i=GanrXs1XzY58D0xpW0okLnMmD88wyCyMNc6ubDosaRotbXYCZalN1vyLaMAJOItonahfUZwhrIXjW8EuOJn3B7n17I4=; Session_id=3:1749558614.5.0.1720263601806:LRgVJQ:13.1.1:czoxNzE3OTMyMTI3NDUzOl9oTVExQToyNQ.2:1|931479797.26651430.2.2:26651430.3:1746915031|3:10308765.819479.n3V9_jOhMqhNfTUmckHRd68lEEw; sessar=1.1202.CiAS11C_CzQ9dY386XEkGIGEyP5J6rxP9KhG-7z1KCxkBw.W_v9xbONalZrMTT3-vOEp6szk8AUE6-2DXddwBy4iXw; sessionid2=3:1749558614.5.0.1720263601806:LRgVJQ:13.1.1:czoxNzE3OTMyMTI3NDUzOl9oTVExQToyNQ.2:1|931479797.26651430.2.2:26651430.3:1746915031|3:10308765.819479.fakesign0000000000000000000; cycada=IZHMfCHwUQWWFHAzgzM5ggqMea+WoxkAfaiXat73ZhQ=; isa=joMufcIu11wIwtU2SgfODznjTuasP3ZFK9orYVUkjH/sv3Xz8CCKCUtlGQ1QTsjtKW9GV1gfg7F1yofqWHuiyVSHA90=; sae=0:8EFAB2AD-308F-423A-A140-37D2D47D0883:b:25.4.4.530:w:d:RU:20230705; yp=1749820701.uc.ru#1749820701.duc.ru#1758806079.brd.6400000000#1758806079.cld.2270452#1752236470.csc.1#1779455220.dafs.5-3_6-3_7-3_10-3#1750886647.hdrc.1#2057912811.hks.0#2065021168.pcs.1#4294967295.skin.l#1781197168.swntab.0#1764651761.szm.1_25:1536x864:1519x740#1772800326.dc_neuro.10#1772799882.bk-map.1#2062275031.udn.cDrQldCz0L7RgCDQnC4%3D#1750525168.dlp.1; ys=udn.cDrQldCz0L7RgCDQnC4%3D#c_chck.3606030996; bh=ElAiQ2hyb21pdW0iO3Y9IjEzNCIsICJOb3Q6QS1CcmFuZCI7dj0iMjQiLCAiWWFCcm93c2VyIjt2PSIyNS40IiwgIllvd3NlciI7dj0iMi41IhoFIng4NiIiDCIyNC42LjIuNzcwIioCPzA6CSJXaW5kb3dzIkIIIjE1LjAuMCJKBCI2NCJSZyJDaHJvbWl1bSI7dj0iMTM0LjAuNjk5OC41MzAiLCAiTm90OkEtQnJhbmQiO3Y9IjI0LjAuMC4wIiwgIllhQnJvd3NlciI7dj0iMjUuNC40LjUzMCIsICJZb3dzZXIiO3Y9IjIuNSJaAj8wYManq8IGaiHcyuH/CJLYobEDn8/h6gP7+vDnDev//fYPx4OClwbzgQI=",
-                       "Cache-Control": "no-cache",
-                       "Connection": "keep-alive",
-                       "Sec-Fetch-Dest": "empty",
-                       "Sec-Fetch-Mode": "no-cors",
-                       "Sec-Fetch-Site": "cross-site",
-                       "sec-fetch-storage-access": "active"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                                     "Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0",
-                       "Accept": "*/*",
-                       "Accept-Language": "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       # "Cookie": ,
-                       "Sec-Fetch-Dest": "empty",
-                       "Sec-Fetch-Mode": "cors",
-                       "Sec-Fetch-Site": "cross-site",
-                       "sec-fetch-storage-access": "active"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                                     "Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0",
-                       "Accept": "*/*",
-                       "Accept-Language": "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Cookie": "yandexuid=2828172591688552891; yuidss=2828172591688552891; ymex=2044858868.yrts.1729498868; yashr=2280337591733872876; _ym_uid=1688552916983330593; receive-cookie-deprecation=1; yandex_login=egor.matiuha; gdpr=0; amcuid=8805531571737317651; my=YwA=; is_gdpr=0; is_gdpr_b=CKKpXBCXtwIoAg==; yabs-vdrf=CcSvdI00_bSS1KuvdTW2Z0W000; _ym_d=1745602712; yp=1756689932.szm.1_25%3A1536x864%3A1513x738%3A15#2062754570.pcs.1#1778930882.swntab.0#1748683452.hdrc.0#1777138754.dc_neuro.2#1748258570.dlp.2; i=6OsqtVXrO1iRqA9SkRJME/C9uSJrUkqKlvou/+ZJZRsMBVfLvje8EcBwcnTfqfMYwcxh5YBoiG7z6owG3pYbizNfHiE=; Session_id=3:1749810342.5.0.1735330185726:Ep3mJQ:e552.1.2:1|931479797.0.2.3:1735330185|3:10308905.408328._4XdoXCFWtGMaJfbQSi0CcfpltU; sessar=1.1202.CiBFuwmLI2zrrlVvq8BhPZhWU3zBHme6v_r0SejCY3uEUA.OYqOmH8EafawqxjMCSas6hky_uaFGIeaKMzsTfl3IbI; sessionid2=3:1749810342.5.0.1735330185726:Ep3mJQ:e552.1.2:1|931479797.0.2.3:1735330185|3:10308905.408328.fakesign0000000000000000000; ys=udn.cDrQldCz0L7RgCDQnC4%3D#c_chck.3632214097; bh=EkIiTWljcm9zb2Z0IEVkZ2UiO3Y9IjEzNyIsICJDaHJvbWl1bSI7dj0iMTM3IiwgIk5vdC9BKUJyYW5kIjt2PSIyNCIaBSJ4ODYiIg8iMTIwLjAuMjIxMC42MSIqAj8wOgkiV2luZG93cyJCCCIxNS4wLjAiSgQiNjQiUloiTm90X0EgQnJhbmQiO3Y9IjguMC4wLjAiLCJDaHJvbWl1bSI7dj0iMTIwLjAuNjA5OS43MSIsIk1pY3Jvc29mdCBFZGdlIjt2PSIxMjAuMC4yMjEwLjYxIiJgyvmvwgZqIdzK4f8IktihsQOfz+HqA/v68OcN6//99g/C88yHCOOHAg==",
-                       "Sec-Fetch-Dest": "empty",
-                       "Sec-Fetch-Mode": "cors",
-                       "Sec-Fetch-Site": "cross-site",
-                       "sec-fetch-storage-access": "active"
-                   },
-                   {
-                       'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                                     "Chrome/124.0.6367.770 YaBrowser/24.6.2.770 (beta) Yowser/2.5 Safari/537.36"
 
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                                     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-                       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                       "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Connection": "keep-alive",
-                       "Upgrade-Insecure-Requests": "1"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0",
-                       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                       "Accept-Language": "ru,en-US;q=0.7,en;q=0.3",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Connection": "keep-alive"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5) AppleWebKit/605.1.15 "
-                                     "(KHTML, like Gecko) Version/17.0 Safari/605.1.15",
-                       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                       "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Connection": "keep-alive"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                                     "(KHTML, like Gecko) YaBrowser/24.3.0.0 Yowser/2.5 Chrome/"
-                                     "124.0.6367.90 Safari/537.36",
-                       "Accept": "*/*",
-                       "Accept-Language": "ru,en;q=0.9",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Connection": "keep-alive"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                                     "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0",
-                       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                       "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Connection": "keep-alive"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                                     "(KHTML, like Gecko) Chrome/124.0.6367.78 Safari/537.36",
-                       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                       "Accept-Language": "ru,en;q=0.8",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Connection": "keep-alive"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) "
-                                     "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1",
-                       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                       "Accept-Language": "ru-RU,ru;q=0.9",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Connection": "keep-alive"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (Android 13; Mobile; rv:123.0) Gecko/123.0 Firefox/123.0",
-                       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                       "Accept-Language": "ru-RU,ru;q=0.9",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Connection": "keep-alive"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (iPad; CPU OS 15_5 like Mac OS X) AppleWebKit/605.1.15 "
-                                     "(KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1",
-                       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                       "Accept-Language": "ru,en;q=0.9",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Connection": "keep-alive"
-                   },
-                   {
-                       "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 "
-                                     "(KHTML, like Gecko) Chrome/120.0.6099.110 Safari/537.36",
-                       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                       "Accept-Language": "ru,en-US;q=0.8",
-                       "Referer": "https://www.kinopoisk.ru/",
-                       "Connection": "keep-alive"
-                   }
-               ][::-1]
-instructions_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Где мне найти свой id?",
-                                                                  callback_data="show_instructions")]])
-script_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Показать скрипт",
-                                                            callback_data="show_script")]])
-script_instructions_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Как использовать скрипт?",
-                                                                         callback_data="script_instructions")]])
-sent: Optional[Message] = None
-s: Optional[Message] = None
+def run_bot():
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("add_user", add_user))
+    app.add_handler(CommandHandler("change_user", change_user))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_handler))
+    app.add_handler(CallbackQueryHandler(handle_user_choice, pattern=r"^user_\d+$"))
+    app.add_handler(CallbackQueryHandler(start_over, pattern="start_over"))
+    app.add_handler(CallbackQueryHandler(go_on_query, pattern="go_on"))
+    app.add_handler(CallbackQueryHandler(get_rates_tg, pattern="start_parse"))
+    app.add_handler(CallbackQueryHandler(show_instructions, pattern="show_instructions"))
+    app.add_handler(CallbackQueryHandler(file_instructions, pattern="file_instructions"))
+    app.add_handler(CallbackQueryHandler(show_script, pattern="show_script"))
+    app.add_handler(CallbackQueryHandler(show_script_instructions, pattern="script_instructions"))
+    app.add_handler(CallbackQueryHandler(start_api_load, pattern="start_api_load"))
+    app.add_handler(CallbackQueryHandler(start_data_processing, pattern="start_data_processing"))
+    app.add_handler(MessageHandler(filters.Document.ALL, handle_document))
 
-markup = InlineKeyboardMarkup(list())
-CURRENT_USER = None
-CHAT_USERS = dict()
+    if WEBHOOK_URL:
+        # Render предоставляет порт через переменную окружения PORT
+        port = int(os.environ.get("PORT", "8080"))  # Используйте 8080 как дефолтное значение
 
-app = ApplicationBuilder().token(BOT_TOKEN).build()
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("add_user", add_user))
-app.add_handler(CommandHandler("change_user", change_user))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_handler))
-app.add_handler(CallbackQueryHandler(handle_user_choice, pattern=r"^user_\d+$"))
-app.add_handler(CallbackQueryHandler(start_over, pattern="start_over"))
-app.add_handler(CallbackQueryHandler(go_on_query, pattern="go_on"))
-app.add_handler(CallbackQueryHandler(get_rates_tg, pattern="start_parse"))
-app.add_handler(CallbackQueryHandler(show_instructions, pattern="show_instructions"))
-app.add_handler(CallbackQueryHandler(file_instructions, pattern="file_instructions"))
-app.add_handler(CallbackQueryHandler(show_script, pattern="show_script"))
-app.add_handler(CallbackQueryHandler(show_script_instructions, pattern="script_instructions"))
-app.add_handler(CallbackQueryHandler(start_api_load, pattern="start_api_load"))
-app.add_handler(CallbackQueryHandler(start_data_processing, pattern="start_data_processing"))
+        print(f"Starting bot with webhook on port {port} at {WEBHOOK_URL}")
+        app.run_webhook(
+            listen="0.0.0.0",
+            port=port,
+            url_path="",  # Обычно остается пустым, если WEBHOOK_URL уже содержит полный путь
+            webhook_url=WEBHOOK_URL
+        )
+    else:
+        print("WEBHOOK_URL is not set. Falling back to polling (not recommended for Render).")
+        app.run_polling()
 
-app.add_handler(MessageHandler(filters.Document.ALL, handle_document))
 
-app.run_webhook()
+if __name__ == '__main__':
+    load_dotenv()
+    BOT_TOKEN = os.environ.get("BOT_TOKEN")
+    WEBHOOK_URL = os.environ.get("WEBHOOK_URL")
+    API_KEYS = os.environ.get("API_KEYS")
+    os.makedirs("auxiliary files", exist_ok=True)
+    os.makedirs("parsed_rates", exist_ok=True)
+    os.makedirs("raw_movie_files", exist_ok=True)
+    os.makedirs("user_models", exist_ok=True)
+    os.makedirs("users_database", exist_ok=True)
+    if not os.path.exists("users_database/users.json"):
+        with open("users_database/users.json", "w", encoding="utf-8") as f:
+            json.dump({}, f)
+    if BOT_TOKEN is None:
+        print("Error: BOT_TOKEN environment variable not set. Please set it in .env or environment.")
+    else:
+        API_KEYS_LIST = API_KEYS.split(" ")
+        API_S = "\n".join(API_KEYS_LIST)
+        with open("auxiliary files/api_keys.txt", "w", encoding="utf-8") as fi:
+            fi.write(API_S)
+        headers_list = [{
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                          "(KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+            "Referer": "https://www.kinopoisk.ru/",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+        },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                                             "Chrome/134.0.0.0"
+                                             "YaBrowser/25.4.0.0 Safari/537.36",
+                               "Accept": "*/*",
+                               "Accept-Language": "ru,en;q=0.9",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               # "Cookie": ,
+                               "Cache-Control": "no-cache",
+                               "Connection": "keep-alive",
+                               "Sec-Fetch-Dest": "empty",
+                               "Sec-Fetch-Mode": "no-cors",
+                               "Sec-Fetch-Site": "cross-site",
+                               "sec-fetch-storage-access": "active"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                                             "Chrome/134.0.0.0"
+                                             "YaBrowser/25.4.0.0 Safari/537.36",
+                               "Accept": "*/*",
+                               "Accept-Language": "ru,en;q=0.9",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Cookie": "yandexuid=8969119991720263528; yashr=926658521720263535; yuidss=8969119991720263528; ymex=2035623597.yrts.1720263597; yandex_login=egor.matiuha; my=YwA=; gdpr=0; _ym_uid=1688552967950758693; amcuid=4355776901720429538; bh=EjsiTm90L0EpQnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjEyNiIsICJZYUJyb3dzZXIiO3Y9IjI0IhoFIng4NiIiDCIyNC42LjIuNzcwIioCPzA6CSJXaW5kb3dzIkIIIjE1LjAuMCJKBCI2NCJSVCJDaHJvbWl1bSI7dj0iMTI0LjAuNjM2Ny4yNDMiLCJZYUJyb3dzZXIiO3Y9IjI0LjYuMi43NzAiLCJOb3QtQS5CcmFuZCI7dj0iOTkuMC4wLjAiIg==; _ym_d=1742546859; yabs-vdrf=A0; is_gdpr=0; is_gdpr_b=CK6UEBDhwwIoAg==; i=GanrXs1XzY58D0xpW0okLnMmD88wyCyMNc6ubDosaRotbXYCZalN1vyLaMAJOItonahfUZwhrIXjW8EuOJn3B7n17I4=; Session_id=3:1749558614.5.0.1720263601806:LRgVJQ:13.1.1:czoxNzE3OTMyMTI3NDUzOl9oTVExQToyNQ.2:1|931479797.26651430.2.2:26651430.3:1746915031|3:10308765.819479.n3V9_jOhMqhNfTUmckHRd68lEEw; sessar=1.1202.CiAS11C_CzQ9dY386XEkGIGEyP5J6rxP9KhG-7z1KCxkBw.W_v9xbONalZrMTT3-vOEp6szk8AUE6-2DXddwBy4iXw; sessionid2=3:1749558614.5.0.1720263601806:LRgVJQ:13.1.1:czoxNzE3OTMyMTI3NDUzOl9oTVExQToyNQ.2:1|931479797.26651430.2.2:26651430.3:1746915031|3:10308765.819479.fakesign0000000000000000000; cycada=IZHMfCHwUQWWFHAzgzM5ggqMea+WoxkAfaiXat73ZhQ=; isa=joMufcIu11wIwtU2SgfODznjTuasP3ZFK9orYVUkjH/sv3Xz8CCKCUtlGQ1QTsjtKW9GV1gfg7F1yofqWHuiyVSHA90=; sae=0:8EFAB2AD-308F-423A-A140-37D2D47D0883:b:25.4.4.530:w:d:RU:20230705; yp=1749820701.uc.ru#1749820701.duc.ru#1758806079.brd.6400000000#1758806079.cld.2270452#1752236470.csc.1#1779455220.dafs.5-3_6-3_7-3_10-3#1750886647.hdrc.1#2057912811.hks.0#2065021168.pcs.1#4294967295.skin.l#1781197168.swntab.0#1764651761.szm.1_25:1536x864:1519x740#1772800326.dc_neuro.10#1772799882.bk-map.1#2062275031.udn.cDrQldCz0L7RgCDQnC4%3D#1750525168.dlp.1; ys=udn.cDrQldCz0L7RgCDQnC4%3D#c_chck.3606030996; bh=ElAiQ2hyb21pdW0iO3Y9IjEzNCIsICJOb3Q6QS1CcmFuZCI7dj0iMjQiLCAiWWFCcm93c2VyIjt2PSIyNS40IiwgIllvd3NlciI7dj0iMi41IhoFIng4NiIiDCIyNC42LjIuNzcwIioCPzA6CSJXaW5kb3dzIkIIIjE1LjAuMCJKBCI2NCJSZyJDaHJvbWl1bSI7dj0iMTM0LjAuNjk5OC41MzAiLCAiTm90OkEtQnJhbmQiO3Y9IjI0LjAuMC4wIiwgIllhQnJvd3NlciI7dj0iMjUuNC40LjUzMCIsICJZb3dzZXIiO3Y9IjIuNSJaAj8wYManq8IGaiHcyuH/CJLYobEDn8/h6gP7+vDnDev//fYPx4OClwbzgQI=",
+                               "Cache-Control": "no-cache",
+                               "Connection": "keep-alive",
+                               "Sec-Fetch-Dest": "empty",
+                               "Sec-Fetch-Mode": "no-cors",
+                               "Sec-Fetch-Site": "cross-site",
+                               "sec-fetch-storage-access": "active"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                                             "Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0",
+                               "Accept": "*/*",
+                               "Accept-Language": "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               # "Cookie": ,
+                               "Sec-Fetch-Dest": "empty",
+                               "Sec-Fetch-Mode": "cors",
+                               "Sec-Fetch-Site": "cross-site",
+                               "sec-fetch-storage-access": "active"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                                             "Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0",
+                               "Accept": "*/*",
+                               "Accept-Language": "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Cookie": "yandexuid=2828172591688552891; yuidss=2828172591688552891; ymex=2044858868.yrts.1729498868; yashr=2280337591733872876; _ym_uid=1688552916983330593; receive-cookie-deprecation=1; yandex_login=egor.matiuha; gdpr=0; amcuid=8805531571737317651; my=YwA=; is_gdpr=0; is_gdpr_b=CKKpXBCXtwIoAg==; yabs-vdrf=CcSvdI00_bSS1KuvdTW2Z0W000; _ym_d=1745602712; yp=1756689932.szm.1_25%3A1536x864%3A1513x738%3A15#2062754570.pcs.1#1778930882.swntab.0#1748683452.hdrc.0#1777138754.dc_neuro.2#1748258570.dlp.2; i=6OsqtVXrO1iRqA9SkRJME/C9uSJrUkqKlvou/+ZJZRsMBVfLvje8EcBwcnTfqfMYwcxh5YBoiG7z6owG3pYbizNfHiE=; Session_id=3:1749810342.5.0.1735330185726:Ep3mJQ:e552.1.2:1|931479797.0.2.3:1735330185|3:10308905.408328._4XdoXCFWtGMaJfbQSi0CcfpltU; sessar=1.1202.CiBFuwmLI2zrrlVvq8BhPZhWU3zBHme6v_r0SejCY3uEUA.OYqOmH8EafawqxjMCSas6hky_uaFGIeaKMzsTfl3IbI; sessionid2=3:1749810342.5.0.1735330185726:Ep3mJQ:e552.1.2:1|931479797.0.2.3:1735330185|3:10308905.408328.fakesign0000000000000000000; ys=udn.cDrQldCz0L7RgCDQnC4%3D#c_chck.3632214097; bh=EkIiTWljcm9zb2Z0IEVkZ2UiO3Y9IjEzNyIsICJDaHJvbWl1bSI7dj0iMTM3IiwgIk5vdC9BKUJyYW5kIjt2PSIyNCIaBSJ4ODYiIg8iMTIwLjAuMjIxMC42MSIqAj8wOgkiV2luZG93cyJCCCIxNS4wLjAiSgQiNjQiUloiTm90X0EgQnJhbmQiO3Y9IjguMC4wLjAiLCJDaHJvbWl1bSI7dj0iMTIwLjAuNjA5OS43MSIsIk1pY3Jvc29mdCBFZGdlIjt2PSIxMjAuMC4yMjEwLjYxIiJgyvmvwgZqIdzK4f8IktihsQOfz+HqA/v68OcN6//99g/C88yHCOOHAg==",
+                               "Sec-Fetch-Dest": "empty",
+                               "Sec-Fetch-Mode": "cors",
+                               "Sec-Fetch-Site": "cross-site",
+                               "sec-fetch-storage-access": "active"
+                           },
+                           {
+                               'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                                             "Chrome/124.0.6367.770 YaBrowser/24.6.2.770 (beta) Yowser/2.5 Safari/537.36"
+
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                                             "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                               "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Connection": "keep-alive",
+                               "Upgrade-Insecure-Requests": "1"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0",
+                               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                               "Accept-Language": "ru,en-US;q=0.7,en;q=0.3",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Connection": "keep-alive"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5) AppleWebKit/605.1.15 "
+                                             "(KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+                               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                               "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Connection": "keep-alive"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                                             "(KHTML, like Gecko) YaBrowser/24.3.0.0 Yowser/2.5 Chrome/"
+                                             "124.0.6367.90 Safari/537.36",
+                               "Accept": "*/*",
+                               "Accept-Language": "ru,en;q=0.9",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Connection": "keep-alive"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                                             "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0",
+                               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                               "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Connection": "keep-alive"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                                             "(KHTML, like Gecko) Chrome/124.0.6367.78 Safari/537.36",
+                               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                               "Accept-Language": "ru,en;q=0.8",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Connection": "keep-alive"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) "
+                                             "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1",
+                               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                               "Accept-Language": "ru-RU,ru;q=0.9",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Connection": "keep-alive"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Android 13; Mobile; rv:123.0) Gecko/123.0 Firefox/123.0",
+                               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                               "Accept-Language": "ru-RU,ru;q=0.9",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Connection": "keep-alive"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (iPad; CPU OS 15_5 like Mac OS X) AppleWebKit/605.1.15 "
+                                             "(KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1",
+                               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                               "Accept-Language": "ru,en;q=0.9",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Connection": "keep-alive"
+                           },
+                           {
+                               "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 "
+                                             "(KHTML, like Gecko) Chrome/120.0.6099.110 Safari/537.36",
+                               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                               "Accept-Language": "ru,en-US;q=0.8",
+                               "Referer": "https://www.kinopoisk.ru/",
+                               "Connection": "keep-alive"
+                           }
+                       ][::-1]
+
+        instructions_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Где мне найти свой id?",
+                                                                          callback_data="show_instructions")]])
+        script_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Показать скрипт",
+                                                                    callback_data="show_script")]])
+        script_instructions_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Как использовать скрипт?",
+                                                                                 callback_data="script_instructions")]])
+        sent: Optional[Message] = None
+        s: Optional[Message] = None
+
+        markup = InlineKeyboardMarkup(list())
+        CURRENT_USER = None
+        CHAT_USERS = dict()
+        run_bot()
