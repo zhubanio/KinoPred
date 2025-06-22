@@ -70,6 +70,7 @@ One-Hot Encoding для стран и жанров.
 Клонируйте репозиторий:
 
 git clone https://github.com/ваше-имя/KinoPred.git
+
 cd KinoPred
 
 Создайте и активируйте виртуальное окружение:
