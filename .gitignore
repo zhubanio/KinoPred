@@ -19,3 +19,7 @@ parsed_rates/
 raw_movie_files/
 user_models/
 users_database/
+mlartifacts/
+mlflow_env/
+mlruns/
+.env
