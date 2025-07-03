@@ -1,1 +1,22 @@
 .env
+parsed_rates/
+raw_movie_files/
+user_models/
+users_database/
+venv/
+env/
+# PyCharm specific files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Python temporary and compilation files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.egg
+*.egg-info/
+build/
+dist/
