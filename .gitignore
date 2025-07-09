@@ -25,3 +25,4 @@ mlruns/
 .env
 again.py
 delete_png.py
+train_model.py
