@@ -26,3 +26,4 @@ mlruns/
 again.py
 delete_png.py
 train_model.py
+find_grid.py
